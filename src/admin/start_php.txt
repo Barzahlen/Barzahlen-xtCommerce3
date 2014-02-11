@@ -1,0 +1,5 @@
+<!--BOF - Barzahlen - 2013-05-17: Barzahlen Version Check-->
+<tr>
+    <td><?php include(DIR_WS_MODULES . "barzahlen_version_check.php"); ?></td>
+</tr>
+<!--EOF - Barzahlen - 2013-05-17: Barzahlen Version Check-->

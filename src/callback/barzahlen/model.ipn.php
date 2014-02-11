@@ -131,8 +131,7 @@ class BZ_Ipn
     {
         // check order
         $query = xtc_db_query("SELECT * FROM " . TABLE_ORDERS . "
-                           WHERE currency = '" . $this->receivedData['currency'] . "'
-                             AND barzahlen_transaction_id = '" . $this->receivedData['transaction_id'] . "'");
+                           WHERE barzahlen_transaction_id = '" . $this->receivedData['transaction_id'] . "'");
         if (xtc_db_num_rows($query) != 1) {
             $this->_bzLog('model/ipn: No corresponding order found in database - ' . serialize($this->receivedData));
             return false;
@@ -145,16 +144,6 @@ class BZ_Ipn
                 $this->_bzLog('model/ipn: Order id doesn\'t match - ' . serialize($this->receivedData));
                 return false;
             }
-        }
-
-        // check order total
-        $query = xtc_db_query("SELECT value FROM " . TABLE_ORDERS_TOTAL . "
-                           WHERE orders_id = '" . $this->orderId . "'
-                             AND class = 'ot_total'");
-        $result = xtc_db_fetch_array($query);
-        if (number_format($result['value'], 2, '.', '') != $this->receivedData['amount']) {
-            $this->_bzLog('model/ipn: Order total and amount don\'t match - ' . serialize($this->receivedData));
-            return false;
         }
 
         // check shop id
