@@ -1,0 +1,28 @@
+<!--BOF - Barzahlen - 2012-09-01: Barzahlen Payment-Slip-Link-->
+{if $PAYMENT_SLIP_LINK != ''}
+<iframe src="{$PAYMENT_SLIP_LINK}" width="0" height="1" frameborder="0"></iframe>
+<img src="http://cdn.barzahlen.de/images/barzahlen_logo.png" height="57" width="168" alt="" style="padding:0; margin:0; margin-bottom: 10px;"/>
+<hr/>
+
+<br/>
+<div style="width:100%;">
+  <div style="position: relative; float: left; width: 180px; text-align: center;">
+    <a href="{$PAYMENT_SLIP_LINK}" target="_blank" style="color: #63A924; text-decoration: none; font-size: 1.2em;">
+      <img src="http://cdn.barzahlen.de/images/barzahlen_checkout_success_payment_slip.png" height="192" width="126" alt="" style="margin-bottom: 5px;"/><br/>
+      <strong>Download PDF</strong>
+    </a>
+  </div>
+
+  <span style="font-weight: bold; color: #63A924; font-size: 1.5em;">{$BARZAHLEN_TITLE}</span>
+  <p>{$INFOTEXT_1}</p>
+  <p>{$EXPIRATION_NOTICE}</p>
+  <div style="width:100%;">
+    <div style="position: relative; float: left; width: 50px;"><img src="http://cdn.barzahlen.de/images/barzahlen_mobile.png" height="52" width="41" alt="" style="float: left;"/></div>
+    <p>{$INFOTEXT_2}</p>
+  </div>
+
+  <br style="clear:both;" /><br/>
+</div>
+<hr/><br/>
+{/if}
+<!--EOF - Barzahlen - 2012-09-01: Barzahlen Payment-Slip-Link-->
