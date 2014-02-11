@@ -87,7 +87,7 @@ class db_handler {
 }
 
 /**
- * gambio DB functions
+ * xtcommerce3 DB functions
  */
 function xtc_db_query($query) {
   return mysql_query($query);
@@ -100,7 +100,7 @@ function xtc_db_fetch_array($query) {
 }
 
 /**
- * other gambio methods
+ * other xtcommerce3 methods
  */
 function xtc_image($path) {
   return $path;
