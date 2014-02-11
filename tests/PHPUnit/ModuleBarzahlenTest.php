@@ -87,25 +87,16 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase
      */
     public function testSelection()
     {
-        $image = xtc_image('https://cdn.barzahlen.de/images/barzahlen_logo.png');
-
-        $expected = array('id' => 'barzahlen',
-            'module' => MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE,
-            'description' => str_replace('{{image}}', $image, MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_DESCRIPTION));
+        $expected = array('id' => 'barzahlen', 'module' => MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE);
 
         if (MODULE_PAYMENT_BARZAHLEN_SANDBOX == 'True') {
             $expected['module'] .= ' [SANDBOX]';
-            $expected['description'] .= MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_SANDBOX;
         }
 
-        $expected['description'] .= MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_PARTNER;
+        $output = $this->object->selection();
+        unset($output['description']);
 
-        for ($i = 1; $i <= 10; $i++) {
-            $count = str_pad($i, 2, "0", STR_PAD_LEFT);
-            $expected['description'] .= '<img src="https://cdn.barzahlen.de/images/barzahlen_partner_' . $count . '.png" alt="" style="vertical-align: middle; height: 25px;" />';
-        }
-
-        $this->assertEquals($expected, $this->object->selection());
+        $this->assertEquals($expected, $output);
     }
 
     /**
