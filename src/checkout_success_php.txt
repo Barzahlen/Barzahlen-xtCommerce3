@@ -1,21 +1,13 @@
-//BOF - Barzahlen - 2012-09-01: Barzahlen Payment-Slip-Link
+//BOF - Barzahlen - 2013-01-28: Barzahlen Checkout Page
 $payment_query = xtc_db_query("SELECT payment_method FROM ".TABLE_ORDERS." WHERE orders_id = '".$last_order."' LIMIT 1");
 $payment = xtc_db_fetch_array($payment_query);
 if($payment['payment_method'] === 'barzahlen') {
-  if (isset($_SESSION['payment-slip-link'])) {
-    require_once DIR_WS_LANGUAGES . $_SESSION['language'].'/modules/payment/barzahlen.php';
-    $smarty->assign('BARZAHLEN_TITLE',MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_SUCCESS_TITLE);
-    $smarty->assign('PAYMENT_SLIP_LINK',$_SESSION['payment-slip-link']);
+  if (isset($_SESSION['infotext-1'])) {
     $smarty->assign('INFOTEXT_1',$_SESSION['infotext-1']);
-    $smarty->assign('INFOTEXT_2',$_SESSION['infotext-2']);
-    $smarty->assign('EXPIRATION_NOTICE',$_SESSION['expiration-notice']);
-    unset($_SESSION['payment-slip-link']);
     unset($_SESSION['infotext-1']);
-    unset($_SESSION['infotext-2']);
-    unset($_SESSION['expiration-notice']);
   }
   else {
-    xtc_redirect(DIR_WS_CATALOG . FILENAME_ACCOUNT_HISTORY_INFO . '?order_id=' . $last_order);
+    xtc_redirect(xtc_href_link(FILENAME_ACCOUNT_HISTORY_INFO, 'order_id=' . $last_order, 'SSL'));
   }
 }
-//EOF - Barzahlen - 2012-09-01: Barzahlen Payment-Slip-Link
+//EOF - Barzahlen - 2013-01-28: Barzahlen Checkout Page

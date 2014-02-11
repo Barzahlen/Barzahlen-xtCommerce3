@@ -108,6 +108,9 @@ function xtc_image($path) {
 function xtc_redirect($path) {
   return $path;
 }
+function xtc_href_link($file, $settings, $ssl) {
+  return $file;
+}
 
 /**
  * Fake order.
