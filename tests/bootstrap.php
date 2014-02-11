@@ -52,7 +52,7 @@ define('MODULE_PAYMENT_BARZAHLEN_ALLOWED','DE');
 define('MODULE_PAYMENT_BARZAHLEN_SHOPID','10003');
 define('MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY','20a7e7235b2de0e0fda66ff8ae06665fb2470b69');
 define('MODULE_PAYMENT_BARZAHLEN_NOTIFICATIONKEY','20bc75e9ca4b72f4b216bf623299295a5a814541');
-define('MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL','1000.00');
+define('MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL','999.99');
 define('MODULE_PAYMENT_BARZAHLEN_SORT_ORDER','0');
 
 /**
@@ -124,6 +124,10 @@ class order {
         $this->customer['email_address'] = 'foo@bar.com';
         $this->info['total'] = '122.07';
         $this->info['currency'] = 'EUR';
+        $this->customer['street_address'] = 'Musterstr. 1a';
+        $this->customer['postcode'] = '12345';
+        $this->customer['city'] = 'Musterstadt';
+        $this->customer['country'] = array('iso_code_2' => 'DE');
       default:
         break;
     }

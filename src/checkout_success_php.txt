@@ -1,7 +1,7 @@
 //BOF - Barzahlen - 2012-09-01: Barzahlen Payment-Slip-Link
-require (DIR_WS_CLASSES.'order.php');
-$order = new order($last_order);
-if($order->info['payment_method'] === 'barzahlen') {
+$payment_query = xtc_db_query("SELECT payment_method FROM ".TABLE_ORDERS." WHERE orders_id = '".$last_order."' LIMIT 1");
+$payment = xtc_db_fetch_array($payment_query);
+if($payment['payment_method'] === 'barzahlen') {
   if (isset($_SESSION['payment-slip-link'])) {
     require_once DIR_WS_LANGUAGES . $_SESSION['language'].'/modules/payment/barzahlen.php';
     $smarty->assign('BARZAHLEN_TITLE',MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_SUCCESS_TITLE);
