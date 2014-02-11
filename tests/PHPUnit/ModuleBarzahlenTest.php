@@ -86,7 +86,7 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
    */
   public function testSelection() {
 
-    $image = xtc_image('http://cdn.barzahlen.de/images/barzahlen_logo.png');
+    $image = xtc_image('https://cdn.barzahlen.de/images/barzahlen_logo.png');
 
     $expected = array('id' => 'barzahlen',
                       'module' => MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE,
@@ -101,7 +101,7 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
 
     for($i = 1; $i <= 10; $i++) {
       $count = str_pad($i,2,"0",STR_PAD_LEFT);
-      $expected['description'] .= '<img src="http://cdn.barzahlen.de/images/barzahlen_partner_'.$count.'.png" alt="" style="vertical-align: middle; height: 25px;" />';
+      $expected['description'] .= '<img src="https://cdn.barzahlen.de/images/barzahlen_partner_'.$count.'.png" alt="" style="vertical-align: middle; height: 25px;" />';
     }
 
     $this->assertEquals($expected, $this->object->selection());
