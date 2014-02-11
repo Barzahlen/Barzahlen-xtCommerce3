@@ -36,12 +36,15 @@ class barzahlen {
   function barzahlen() {
 
     $this->code = 'barzahlen';
-    $this->version = '1.1.0';
+    $this->version = '1.1.1';
     $this->title = MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE;
     $this->description = '<div align="center">' . xtc_image('http://cdn.barzahlen.de/images/barzahlen_logo.png', MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE) . '</div><br>' . MODULE_PAYMENT_BARZAHLEN_TEXT_DESCRIPTION;
     $this->sort_order = MODULE_PAYMENT_BARZAHLEN_SORT_ORDER;
     $this->enabled = (MODULE_PAYMENT_BARZAHLEN_STATUS == 'True') ? true : false;
     $this->defaultCurrency = 'EUR';
+    $this->tmpOrders = true;
+    $this->tmpStatus = MODULE_PAYMENT_BARZAHLEN_TMP_STATUS;
+    $this->form_action_url = '';
 
     $this->cert = DIR_FS_CATALOG . 'includes/modules/payment/ca-bundle.crt';
     $this->logFile = DIR_FS_CATALOG . 'logfiles/barzahlen.log';
@@ -132,17 +135,26 @@ class barzahlen {
   }
 
   /**
-   * Payment process between final confirmation and success page.
+   * Before process. Not used in this module.
+   *
+   * @return false
    */
   function before_process() {
-    global $order;
+    return false;
+  }
+
+  /**
+   * Payment process between final confirmation and success page.
+   */
+  function payment_action() {
+    global $order, $insert_id;
 
     $transData = array();
     $transData['customer_email'] = $order->customer['email_address'];
-    $transData['amount'] = (string)round($order->info['total'], 2);
+    $transData['amount'] = $order->info['total'];
     $transData['currency'] = $order->info['currency'];
     $transData['language'] = $_SESSION['language_code'];
-    $transData['order_id'] = '';
+    $transData['order_id'] = $insert_id;
     $transData['customer_street_nr'] = $order->customer['street_address'];
     $transData['customer_zipcode'] = $order->customer['postcode'];
     $transData['customer_city'] = $order->customer['city'];
@@ -153,50 +165,56 @@ class barzahlen {
     $transArray = $this->_buildTransArray($transData);
     $xmlArray = $this->_connectToApi('create', $transArray);
 
-    if($xmlArray != null) {
-      $_SESSION['transaction-id']  = $xmlArray['transaction-id'];
-      $_SESSION['payment-slip-link']  = $xmlArray['payment-slip-link'];
-      $_SESSION['infotext-1']  = $this->_convertISO($xmlArray['infotext-1']);
-      $_SESSION['infotext-2']  = $this->_convertISO($xmlArray['infotext-2']);
-      $_SESSION['expiration-notice']  = $this->_convertISO($xmlArray['expiration-notice']);
-    }
-    else {
-      xtc_redirect(DIR_WS_CATALOG . FILENAME_CHECKOUT_PAYMENT . '?payment_error=barzahlen&' . session_name() . '=' . session_id());
-    }
-  }
-
-  /**
-   * Updates datasets for the new order after successful payment slip generation.
-   */
-  function after_process() {
-    global $insert_id;
-
-    // set transaction details
-    xtc_db_query("UPDATE ". TABLE_ORDERS ."
-                  SET barzahlen_transaction_id = '".$_SESSION['transaction-id']."' ,
-                      barzahlen_transaction_state = 'pending',
-                      orders_status = '".MODULE_PAYMENT_BARZAHLEN_NEW_STATUS."'
-                  WHERE orders_id = '".$insert_id."'");
-
     // select last order history comment for this order
     $query = xtc_db_query("SELECT orders_status_history_id, comments FROM ". TABLE_ORDERS_STATUS_HISTORY ."
                            WHERE orders_id = '".$insert_id."'
                            ORDER BY orders_status_history_id DESC");
     $last = xtc_db_fetch_array($query);
 
-    // insert create success comment
-    xtc_db_query("UPDATE ". TABLE_ORDERS_STATUS_HISTORY ."
-                  SET orders_status_id = '".MODULE_PAYMENT_BARZAHLEN_NEW_STATUS."',
-                      comments = '". MODULE_PAYMENT_BARZAHLEN_TEXT_X_ATTEMPT_SUCCESS ."'
-                  WHERE orders_status_history_id = '".$last['orders_status_history_id']."'");
+    if($xmlArray != null) {
+      $_SESSION['payment-slip-link']  = $xmlArray['payment-slip-link'];
+      $_SESSION['infotext-1']  = $this->_convertISO($xmlArray['infotext-1']);
+      $_SESSION['infotext-2']  = $this->_convertISO($xmlArray['infotext-2']);
+      $_SESSION['expiration-notice']  = $this->_convertISO($xmlArray['expiration-notice']);
 
-    // send corresponding order id
-    $transData = array();
-    $transData['transaction_id'] = $_SESSION['transaction-id'];
-    $transData['order_id'] = $insert_id;
-    $transArray = $this->_buildTransArray($transData);
-    $this->_connectToApi('update', $transArray);
-    unset($_SESSION['transaction-id']);
+      // set transaction details
+      xtc_db_query("UPDATE ". TABLE_ORDERS ."
+                    SET barzahlen_transaction_id = '".$xmlArray['transaction-id']."' ,
+                        barzahlen_transaction_state = 'pending',
+                        orders_status = '".MODULE_PAYMENT_BARZAHLEN_NEW_STATUS."'
+                    WHERE orders_id = '".$insert_id."'");
+
+      // insert create success comment
+      xtc_db_query("UPDATE ". TABLE_ORDERS_STATUS_HISTORY ."
+                    SET orders_status_id = '".MODULE_PAYMENT_BARZAHLEN_NEW_STATUS."',
+                        comments = '". MODULE_PAYMENT_BARZAHLEN_TEXT_X_ATTEMPT_SUCCESS ."'
+                    WHERE orders_status_history_id = '".$last['orders_status_history_id']."'");
+
+      xtc_redirect(DIR_WS_CATALOG . FILENAME_CHECKOUT_PROCESS . '?' . session_name() . '=' . session_id());
+    }
+    else {
+      // set order status
+      xtc_db_query("UPDATE ". TABLE_ORDERS ."
+                    SET orders_status = '".MODULE_PAYMENT_BARZAHLEN_EXPIRED_STATUS."'
+                    WHERE orders_id = '".$insert_id."'");
+
+      // insert create failure comment
+      xtc_db_query("UPDATE ". TABLE_ORDERS_STATUS_HISTORY ."
+                    SET orders_status_id = '".MODULE_PAYMENT_BARZAHLEN_EXPIRED_STATUS."',
+                        comments = '".$this->_convertISO(MODULE_PAYMENT_BARZAHLEN_TEXT_PAYMENT_ATTEMPT_FAILED)."'
+                    WHERE orders_status_history_id = '".$last['orders_status_history_id']."'");
+
+      xtc_redirect(DIR_WS_CATALOG . FILENAME_CHECKOUT_PAYMENT . '?payment_error=barzahlen&' . session_name() . '=' . session_id());
+    }
+  }
+
+  /**
+   * After process. Not used in this module.
+   *
+   * @return boolean
+   */
+  function after_process() {
+    return false;
   }
 
   /**
@@ -378,7 +396,7 @@ class barzahlen {
     $this->_bzDebug('Sending transaction array to server - '.serialize(array($this->callDomain, $transArray)));
     $xmlResponse = $this->_sendTransArray($transArray);
     $this->_bzDebug('Received xml response, parsing now - '.serialize($xmlResponse));
-    $xmlArray = $this->_getResponseData($type, $xmlResponse);
+    $xmlArray = $this->_getResponseData($xmlResponse);
     $this->_bzDebug('Finished parsing, xml array ready - '.serialize($xmlArray));
 
     if($xmlArray == null && $this->connectAttempts < self::MAXATTEMPTS) {
@@ -425,16 +443,9 @@ class barzahlen {
    * @param string $xmlResponse received xml answer
    * @return null if an error occured | array with received and valid data
    */
-  function _getResponseData($type, $xmlResponse) {
+  function _getResponseData($xmlResponse) {
 
-    switch($type) {
-      case 'create':
-        $nodes = array('transaction-id', 'payment-slip-link', 'expiration-notice', 'infotext-1', 'infotext-2', 'result', 'hash');
-        break;
-      case 'update':
-        $nodes = array('transaction-id', 'result', 'hash');
-        break;
-    }
+    $nodes = array('transaction-id', 'payment-slip-link', 'expiration-notice', 'infotext-1', 'infotext-2', 'result', 'hash');
 
     try {
 
@@ -495,8 +506,7 @@ class barzahlen {
    */
   function _bzDebug($message) {
     if(MODULE_PAYMENT_BARZAHLEN_DEBUG == 'True') {
-      $time = date("[Y-m-d H:i:s] ");
-      error_log($time. $message . "\r\r", 3, $this->logFile);
+      $this->_bzLog($message);
     }
   }
 

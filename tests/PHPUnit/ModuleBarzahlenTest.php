@@ -56,6 +56,8 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
     $this->assertFalse($this->object->confirmation());
     $this->assertFalse($this->object->process_button());
     $this->assertFalse($this->object->output_error());
+    $this->assertFalse($this->object->before_process());
+    $this->assertFalse($this->object->after_process());
   }
 
   /**
@@ -135,13 +137,11 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
                  ->method('_sendTransArray')
                  ->will($this->returnValue($xml));
 
-    $this->object->before_process();
+    $this->object->payment_action();
     $this->assertEquals('https://cdn.barzahlen.de/slip/227840174/c91dc292bdb8f0ba1a83c738119ef13e652a43b8a8f261cf93d3bfbf233d7da2.pdf', $_SESSION['payment-slip-link']);
     $this->assertEquals('Text mit einem <a href="https://www.barzahlen.de" target="_blank">Link</a>', $_SESSION['infotext-1']);
     $this->assertEquals('Text mit einem <a href="https://www.barzahlen.de" target="_blank">Link</a>', $_SESSION['infotext-2']);
     $this->assertEquals('Der Zahlschein ist 10 Tage gueltig.', $_SESSION['expiration-notice']);
-
-    $this->object->after_process();
   }
 
   /**
@@ -171,13 +171,11 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
                  ->method('_sendTransArray')
                  ->will($this->onConsecutiveCalls($xml1, $xml2));
 
-    $this->object->before_process();
+    $this->object->payment_action();
     $this->assertEquals('https://cdn.barzahlen.de/slip/227840174/c91dc292bdb8f0ba1a83c738119ef13e652a43b8a8f261cf93d3bfbf233d7da2.pdf', $_SESSION['payment-slip-link']);
     $this->assertEquals('Text mit einem <a href="https://www.barzahlen.de" target="_blank">Link</a>', $_SESSION['infotext-1']);
     $this->assertEquals('Text mit einem <a href="https://www.barzahlen.de" target="_blank">Link</a>', $_SESSION['infotext-2']);
     $this->assertEquals('Der Zahlschein ist 10 Tage gueltig.', $_SESSION['expiration-notice']);
-
-    $this->object->after_process();
   }
 
   /**
@@ -201,7 +199,7 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
                  ->method('_sendTransArray')
                  ->will($this->returnValue($xml));
 
-    $this->object->before_process();
+    $this->object->payment_action();
     $this->assertFalse(array_key_exists('payment-slip-link', $_SESSION));
     $this->assertFalse(array_key_exists('infotext-1', $_SESSION));
     $this->assertFalse(array_key_exists('infotext-2', $_SESSION));

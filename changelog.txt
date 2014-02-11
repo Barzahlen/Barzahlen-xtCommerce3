@@ -1,3 +1,7 @@
+==1.1.1 (29.11.2012)==
+* refactored payment process code
+* increased reliability of avoiding total order amount miscalculation
+
 ==1.1.0 (30.10.2012)==
 * implemented new api geocoding feature to get the closest points of sales
 * added the new update request to eliminate the need of temporary orders
