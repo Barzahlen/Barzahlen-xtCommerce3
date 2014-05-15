@@ -55,7 +55,7 @@ class barzahlen
     function barzahlen()
     {
         $this->code = 'barzahlen';
-        $this->version = '1.1.7';
+        $this->version = '1.1.8';
         $this->title = MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE;
         $this->description = '<div align="center">' . xtc_image('https://cdn.barzahlen.de/images/barzahlen_logo.png', MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE) . '</div><br>' . MODULE_PAYMENT_BARZAHLEN_TEXT_DESCRIPTION;
         $this->sort_order = MODULE_PAYMENT_BARZAHLEN_SORT_ORDER;
@@ -185,9 +185,15 @@ class barzahlen
     {
         global $order, $insert_id;
 
+        if ($_SESSION['customers_status']['customers_status_show_price_tax'] == 0 && $_SESSION['customers_status']['customers_status_add_tax_ot'] == 1) {
+            $total = $order->info['total'] + $order->info['tax'];
+        } else {
+            $total = $order->info['total'];
+        }
+
         $transData = array();
         $transData['customer_email'] = $order->customer['email_address'];
-        $transData['amount'] = number_format($order->info['total'], 2, '.', '');
+        $transData['amount'] = number_format($total, 2, '.', '');
         $transData['currency'] = $order->info['currency'];
         $transData['language'] = $_SESSION['language_code'];
         $transData['order_id'] = $insert_id;

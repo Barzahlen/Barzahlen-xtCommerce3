@@ -28,7 +28,7 @@
 class BarzahlenVersionCheck
 {
     const SHOP_SYSTEM = "xt:Commerce 3";
-    const PLUGIN_VERSION = "1.1.7";
+    const PLUGIN_VERSION = "1.1.8";
 
     /**
      * @var BarzahlenPluginCheckRequest

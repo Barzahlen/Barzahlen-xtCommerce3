@@ -24,6 +24,8 @@
 
 require_once('src/lang/german/modules/payment/barzahlen.php');
 $_SESSION['language_code'] = 'de';
+$_SESSION['customers_status']['customers_status_show_price_tax'] = 1;
+$_SESSION['customers_status']['customers_status_add_tax_ot'] = 0;
 define('DEFAULT_LANGUAGE', 'de');
 define('DEFAULT_CURRENCY', 'EUR');
 

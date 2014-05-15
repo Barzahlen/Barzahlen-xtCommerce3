@@ -4,9 +4,12 @@
 https://integration.barzahlen.de/de/shopsysteme/xt-commerce-3/nutzerhandbuch
 
 ## Current Version
-1.1.7
+1.1.8
 
 ## Changelog
+
+### 1.1.8 (15.05.2014)
+* added missing tax amounts for b2b customers to total amount
 
 ### 1.1.7 (11.02.2014)
 * plugin check works in PHP versions lower than 5.2 now
