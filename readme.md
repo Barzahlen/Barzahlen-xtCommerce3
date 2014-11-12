@@ -1,12 +1,19 @@
 # Barzahlen Payment Module (xt:Commerce 3)
 
 ## User Manual
-https://integration.barzahlen.de/de/shopsysteme/xt-commerce-3/nutzerhandbuch
+DE - https://integration.barzahlen.de/de/shopsysteme/xt-commerce-3/nutzerhandbuch  
+EN - https://integration.barzahlen.de/en/shopsystems/xt-commerce-3/user-manual
 
 ## Current Version
-1.1.8
+1.2.0
 
 ## Changelog
+
+### 1.2.0 (10.11.2014)
+* integrated Barzahlen PHP SDK v1.1.7 (Payment & Cancel)
+* automatic payment slip cancellation for cancelled orders
+* callback returns 200 (OK) only after successful database update
+* improved payment selection
 
 ### 1.1.8 (15.05.2014)
 * added missing tax amounts for b2b customers to total amount
@@ -49,7 +56,7 @@ https://integration.barzahlen.de/de/shopsysteme/xt-commerce-3/nutzerhandbuch
 * initial release
 
 ## Support
-The Barzahlen Team will happily assist you with any problems or questions. Send us an email to support@barzahlen.de or use the contact form at http://www.barzahlen.de/partner/integration.
+The Barzahlen Team will happily assist you with any problems or questions. Send us an email to support@barzahlen.de or use the contact form at https://integration.barzahlen.de/en/support.
 
 ## Copyright
 (c) 2014, Cash Payment Solutions GmbH  

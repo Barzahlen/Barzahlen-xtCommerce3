@@ -2,22 +2,7 @@
 /**
  * Barzahlen Payment Module (xt:Commerce 3)
  *
- * NOTICE OF LICENSE
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * @copyright   Copyright (c) 2012 Zerebro Internet GmbH (http://www.barzahlen.de)
+ * @copyright   Copyright (c) 2014 Cash Payment Solutions GmbH (https://www.barzahlen.de)
  * @author      Alexander Diebler
  * @license     http://opensource.org/licenses/GPL-2.0  GNU General Public License, version 2 (GPL-2.0)
  */
@@ -37,6 +22,7 @@ define('DB_HOST', 'localhost');
 define('DB_USER', 'xtcommerce');
 define('DB_PASSWORD', 'xtcommerce');
 define('DB_DATABASE', 'xtcommerce_3copy');
+define('PROJECT_VERSION', 'xt:Commerce v3.0.4');
 
 define('TABLE_CONFIGURATION', 'configuration');
 define('TABLE_ORDERS', 'orders');
@@ -56,6 +42,10 @@ define('MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY', '20a7e7235b2de0e0fda66ff8ae06665fb
 define('MODULE_PAYMENT_BARZAHLEN_NOTIFICATIONKEY', '20bc75e9ca4b72f4b216bf623299295a5a814541');
 define('MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL', '999.99');
 define('MODULE_PAYMENT_BARZAHLEN_SORT_ORDER', '0');
+
+define('SHOPID', '10483');
+define('PAYMENTKEY', 'de74310368a4718a48e0e244fbf3e22e2ae117f2');
+define('NOTIFICATIONKEY', 'e5354004de1001f86004090d01982a6e05da1c12');
 
 /**
  * DB-Handler
@@ -87,7 +77,7 @@ class db_handler
 }
 
 /**
- * xtcommerce3 DB functions
+ * xt:Commerce 3 DB functions
  */
 function xtc_db_query($query)
 {
@@ -104,8 +94,21 @@ function xtc_db_fetch_array($query)
     return mysql_fetch_array($query);
 }
 
+function xtc_db_perform($table, $array)
+{
+    $keys = "";
+    $values = "";
+    foreach($array as $key => $value) {
+        $keys .= $key . ", ";
+        $values .= "'" . $value . "', ";
+    }
+    $query = "INSERT INTO " . $table . " (" . substr($keys, 0, -2) . ") VALUES (" . substr($values, 0, -2) . ");";
+
+    return mysql_query($query);
+}
+
 /**
- * other xtcommerce3 methods
+ * other xt:Commerce 3 methods
  */
 function xtc_image($path)
 {
